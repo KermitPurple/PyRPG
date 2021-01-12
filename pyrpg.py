@@ -27,7 +27,7 @@ class Player(pygame.sprite.Sprite):
     def __init__(self, pos: Point):
         self.image = pygame.image.load('assets/player.png')
         self.mask = pygame.mask.from_surface(self.image)
-        self.rect = Rect(pos, (5, 4))
+        self.rect = Rect(pos, (5, 4)) # hitbox not size of image
         self.height = self.image.get_height()
         self.velocity = Point(0, 0)
         self.visual_offset_in_image = Point(1, 0)
