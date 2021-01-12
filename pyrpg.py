@@ -25,8 +25,9 @@ class World:
 class Player(pygame.sprite.Sprite):
 
     def __init__(self, pos: Point):
-        self.animation = Animation('assets/images/animations/player/idle/idle_*', [5, 15])
-        self.image = self.animation.get_surface()
+        self.idle_animation = Animation('assets/images/animations/player/idle/idle_*', [10, 45])
+        self.run_animation = Animation('assets/images/animations/player/run/run_*', [4, 4, 4, 4])
+        self.image = self.idle_animation.get_surface()
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = Rect(pos, (5, 4)) # hitbox not size of image
         self.height = self.image.get_height()
@@ -35,8 +36,14 @@ class Player(pygame.sprite.Sprite):
         self.facing_right = True
 
     def update(self, collision_list: [Rect]):
-        self.animation.update()
-        self.image = self.animation.get_surface()
+        if self.velocity == Point(0, 0):
+            self.idle_animation.update()
+            self.image = self.idle_animation.get_surface()
+            self.run_animation.reset()
+        else:
+            self.run_animation.update()
+            self.image = self.run_animation.get_surface()
+            self.idle_animation.reset()
         if self.velocity.x > 0:
             self.facing_right = True
         elif self.velocity.x < 0:

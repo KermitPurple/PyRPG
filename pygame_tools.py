@@ -71,6 +71,11 @@ class Animation:
         """return the frame of the current index"""
         return self.frames[self.frame_index][0]
 
+    def reset(self):
+        """Restart the animation to the start of the loop"""
+        self.frame_index = 0
+        self.frames_until_next = self.frames[0][1]
+
     def load(self, glob_path: str, frame_data):
         """
         Load animations from a glob path
