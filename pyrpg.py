@@ -25,7 +25,8 @@ class World:
 class Player(pygame.sprite.Sprite):
 
     def __init__(self, pos: Point):
-        self.image = pygame.image.load('assets/player.png')
+        self.animation = Animation('assets/images/animations/player/idle/idle_*', [5, 15])
+        self.image = self.animation.get_surface()
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = Rect(pos, (5, 4)) # hitbox not size of image
         self.height = self.image.get_height()
@@ -34,6 +35,8 @@ class Player(pygame.sprite.Sprite):
         self.facing_right = True
 
     def update(self, collision_list: [Rect]):
+        self.animation.update()
+        self.image = self.animation.get_surface()
         if self.velocity.x > 0:
             self.facing_right = True
         elif self.velocity.x < 0:
@@ -61,25 +64,31 @@ class RPG(GameScreen):
     def __init__(self):
         pygame.init()
         real_size = Point(900, 600)
-        super().__init__(pygame.display.set_mode(real_size), real_size, (real_size.x // 4, real_size. y // 4))
+        super().__init__(pygame.display.set_mode(real_size), real_size, Point(real_size.x // 4, real_size. y // 4))
         self.cell_size = Point(16, 4)
         self.world = World(
                 'assets/map.txt',
                 {
                     0: None,
-                    1: pygame.image.load('assets/grass.png')
+                    1: pygame.image.load('assets/images/grass.png')
                 },
                 self.cell_size
             )
         self.camera_scroll = Point(0, 0)
+        self.camera_scroll_speed = 20
         self.player = Player(Point(32, 8))
 
     def update(self):
         self.screen.fill('skyblue')
+        self.update_camera_scroll()
         self.world.draw(self.screen, self.camera_scroll)
         self.player.update(self.world.collision_list)
         self.player.draw(self.screen, self.camera_scroll)
         self.keyboard_input()
+
+    def update_camera_scroll(self):
+        self.camera_scroll.x += (self.window_size.x / 2 - self.player.rect.x - self.camera_scroll.x) / self.camera_scroll_speed
+        self.camera_scroll.y += (self.window_size.y / 2 - self.player.rect.y - self.camera_scroll.y) / self.camera_scroll_speed
 
     def keyboard_input(self):
         keys = pygame.key.get_pressed()
